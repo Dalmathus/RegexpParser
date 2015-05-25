@@ -3,35 +3,35 @@ import java.util.ArrayList;
 
 public class Deque {
 
-	private List<Character> que;
+	private List<State> que;
 
 	public Deque() {
-		que = new ArrayList<Character>();
+		que = new ArrayList<State>();
 	}
 
 // Returns the first element in the que without changing que
 
-	public Character peek() {
+	public State peek() {
 		if(que.size() > 0) return que.get(0);
 		else return null;
 	}
 
 // Remove element from the front of the que and returns it
 
-	public Character pop() {
+	public State pop() {
 		if(que.size() > 0) return que.remove(0);
 		else return null;
 	}
 
 // Adds element to front of the que
 
-	public void pushFront(Character c) {
+	public void pushFront(State c) {
 		que.add(0, c);
 	}
 
 // Appends an element to the end of the que
 
-	public void pushEnd(Character c) {
+	public void pushEnd(State c) {
 		que.add(c);
 	}
 
@@ -40,7 +40,7 @@ public class Deque {
 	public void rotateLeft(int r) {
 		if(que.size() > 1) {
 			for(int i = 0; i < r; i++) {
-				Character temp = que.remove(0);
+				State temp = que.remove(0);
 				que.add(temp);
 			}
 		}
@@ -48,12 +48,16 @@ public class Deque {
 
 // Rotates the que to the left r times
 
-	public void rotatRight(int r) {
+	public void rotateRight(int r) {
 		if(que.size() > 1) {
 			for(int i = 0; i < r; i++) {
-				Character temp = que.remove(que.size() - 1);
+				State temp = que.remove(que.size() - 1);
 				que.add(0, temp);
 			}
 		}
+	}
+
+	public int size() {
+		return que.size();
 	}
 }

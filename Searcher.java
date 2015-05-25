@@ -1,109 +1,83 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayDeque;
-import java.util.Queue;
 import java.util.Scanner;
 
 public class Searcher {
 	
-	ArrayDeque<Character> q = new ArrayDeque<Character>();
-	ArrayDeque<Character> qc = new ArrayDeque<Character>();
+	Deque deq = new Deque();
+	final State SCAN = new State(null, -1, -1);
 	char[] c;
-	String[] ch;
+	Character[] ch;
 	int[] next1;
 	int[] next2;
+	State[] s;
 	
 	public Searcher(File FSM, File patterns) throws FileNotFoundException {
 		
 		Scanner sc = new Scanner(FSM);
-		ch = sc.nextLine().split(",");
+		String[] split0 = sc.nextLine().split(",");
 		String[] split1 = sc.nextLine().split(",");
 		String[] split2 = sc.nextLine().split(",");
 		sc.close();
 		
 		sc = new Scanner(patterns);
 		
-		String example = "aa";
+		String example = "AABCD";
 		c = example.toCharArray();
 		
+		ch = new Character[split0.length];
 		next1 = new int[split1.length];
 		next2 = new int[split2.length];
+		s = new State[split0.length];
 		
 		for (int i = 0; i < next1.length; i++) {
+			ch[i] = split0[i].charAt(0);
 			next1[i] = Integer.parseInt(split1[i]);
 			next2[i] = Integer.parseInt(split2[i]);
+			s[i] = new State(ch[i], next1[i], next2[i]);
 		}
-		
-		for (char ct : c) {
-			q.add(ct);
-		}
-		
+
 		System.out.println("Test Pattern = " + example);
-		if (testValid(0)) System.out.println("Match");
-		else System.out.println("No Match");
+		System.out.println(SCAN.c);
+		if (automaton()) System.out.println("Match");
+		else System.out.println("Not Match");
 	}	
 
 	private boolean automaton() {
-		
-	}
+		// set up the deque	
+		deq.pushFront(SCAN);
+		deq.pushFront(s[0]);
+		deq.pushEnd(s[s[0].next1]);
+		deq.pushEnd(s[s[0].next2]);
 
+		int inputIndex = 0;
 
+		while(inputIndex < c.length) {
 
+			State cur = deq.pop();
+			System.out.println("State Char: " + cur.c + " Next1: " + cur.next1 + " Next2: " + cur.next2);
 
-	
-	private boolean testValid(int state) {
-									
-		if (goUp(state, q.peek()) && q.isEmpty()) return true;
-		else if (goDown(state, q.peek()) && q.isEmpty()) return true;
-						
+			if(cur.next1 == -1) {
+				return false;
+			}
+
+			if (cur.c == null && cur.next1 == 0 && cur.next2 == 0) {
+				return true;
+			}
+
+			if (cur.c == null) {
+				deq.pushFront(s[cur.next1]);
+				deq.pushFront(s[cur.next2]);
+			}
+
+			if (cur.c != null) {
+				if (c[inputIndex] == cur.c){
+					inputIndex++;
+					deq.pushEnd(s[cur.next1]);
+					deq.pushEnd(s[cur.next2]);
+				}
+			}
+		}
 		return false;
-	}
-	
-	private boolean goUp(int state, char c) {
-		
-		if (ch[state].equals(String.valueOf(c))) {
-			qc.add(q.remove());
-			return testValid(next1[state]);
-		}		
-		if (!ch[state].equals(" ") && !ch[state].equals(c)) {
-			refill();
-			return false;
-		}
-		if (ch[state].equals(" ") && next1[state] == 0 && next2[state] == 0 && !q.isEmpty()) {
-			refill();
-			return false;
-		}
-		if (ch[state].equals(" ")) return testValid(next1[state]); 	
-		
-		return false;
-		
-	}
-	
-	private boolean goDown(int state, char c) {
-		
-		if (ch[state].equals(String.valueOf(c))) {
-			qc.add(q.remove());
-			return testValid(next2[state]);
-		}
-		if (!ch[state].equals(" ") && !ch[state].equals(c)) { 
-			refill();
-			return false;
-		}
-		if (ch[state].equals(" ") && next1[state] == 0 && next2[state] == 0 && !q.isEmpty()) {
-			refill();
-			return false;
-		}
-		if (ch[state].equals(" ")) return testValid(next2[state]); 		
-		
-		return false;
-		
-	}	
-	
-	private void refill() {
-		for ( Character c : qc ) {
-			q.addFirst(qc.remove());
-		}
 	}
 }
-
-

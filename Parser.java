@@ -259,7 +259,7 @@ public class Parser {
 		for (int i = 0; i < ch.size(); i++) {
 			sb0.append(i + " ");
 			if( ch.get(i) == null )
-				sb1.append("$ ");
+				sb1.append("  ");
 			else sb1.append(ch.get(i) + " ");
 			sb2.append(next1.get(i) + " ");
 			sb3.append(next2.get(i) + " ");
